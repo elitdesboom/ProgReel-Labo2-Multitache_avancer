@@ -1,0 +1,84 @@
+{
+    "version": "2.0.0",
+    "tasks": 
+    [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++ build project",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-g",
+                "-O0",
+                "-Wall",
+                "-Wno-deprecated-declarations",
+                "${workspaceFolder}/*.cpp",
+                "-o",
+                "${workspaceFolderBasename}",
+                "-lpthread",
+                "-lrt",
+                "-lm",
+                "-lmosquitto",
+                "-lmosquittopp",
+                "-lthreadcom",
+                "-L/usr/lib64",
+                "-L./"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compiler: /usr/bin/g++"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++ compile project",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-g",
+                "-O0",
+                "-Wall",
+                "-c",
+                "${workspaceFolder}/*.cpp",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compiler: /usr/bin/g++"
+        },
+        {
+            "type": "shell",
+            "label": "C/C++: clean project",
+            "command": "rm -f ${workspaceFolder}/*.o ${workspaceFolderBasename}",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "Socat",
+            "command": "sudo socat -v PTY,link=/tmp/ttyS1,raw,echo=0 PTY,link=/tmp/ttyS2,raw,echo=0",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": false
+            },
+            "problemMatcher": []
+        }
+    ]
+}
