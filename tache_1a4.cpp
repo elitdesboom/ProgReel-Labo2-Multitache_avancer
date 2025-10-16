@@ -16,19 +16,19 @@ void TacheFifo::task(void)
 
         int baseY = 2 + stage; // ligne dédiée par tâche
         if(screen)
-            {
+        {
             screen->dispStr(1,baseY,(char*)"Tache");
             screen->dispStr(7,baseY,(int32_t)stage);
             screen->dispStr(10,baseY,(char*)":");
-            }
+        }
 
         switch(stage)
-            {
+        {
             case 0: // afficher temps départ
                 if(screen) {
                     screen->dispStr(13,baseY,(char*)"Start");
                     screen->dispStr(20,baseY,shared->chrono.now());
-                    screen->dispStr(1,7,(char*)"Cycle:");
+                    screen->dispStr(1,7,(char*)"Cycle: ");
                     screen->dispStr(8,7,(int32_t)shared->cycle);
                 }
                 break;
@@ -41,7 +41,7 @@ void TacheFifo::task(void)
                 {
                 volatile unsigned long dummy=0;
                 for(int i=0;i<100000;i++)
-                    {
+                {
                     if( (i % 1000) == 0 && screen)
                         {
                         screen->dispStr(22,baseY,(char*)"i=");
@@ -49,12 +49,12 @@ void TacheFifo::task(void)
                         }
                     for(int j=0;j<5000;j++)
                         dummy += (i ^ j);
-                    }
+                }
                 if(screen)
-                    {
+                {
                     screen->dispStr(22,baseY,(char*)"i=");
                     screen->dispStr(25,baseY,(int32_t)99999);
-                    }
+                }
                 }
                 break;
             case 3: // afficher temps fin puis dormir 30s
