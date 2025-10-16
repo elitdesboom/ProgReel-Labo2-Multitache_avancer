@@ -8,13 +8,13 @@ TacheFifo::TacheFifo(const char *name, StageShared *shared_, TScreen *screen_, i
 TacheFifo::~TacheFifo() {}
 
 void TacheFifo::task(void)
-    {
+{
     signalStart();
+    // Chaque tâche exécute en boucle la séquence complète
+    TTemps chrono; // local pour éviter les accès concurrents au tampon interne
     while(1)
-        {
-        shared->sem[stage].take();
-
-        int baseY = 2 + stage; // ligne dédiée par tâche
+    {
+        int baseY = 2 + (stage * 2); // 2 lignes par tâche pour éviter tout chevauchement
         if(screen)
         {
             screen->dispStr(1,baseY,(char*)"Tache");
@@ -22,50 +22,40 @@ void TacheFifo::task(void)
             screen->dispStr(10,baseY,(char*)":");
         }
 
-        switch(stage)
-        {
-            case 0: // afficher temps départ
-                if(screen) {
-                    screen->dispStr(13,baseY,(char*)"Start");
-                    screen->dispStr(20,baseY,shared->chrono.now());
-                    screen->dispStr(1,7,(char*)"Cycle: ");
-                    screen->dispStr(8,7,(int32_t)shared->cycle);
-                }
-                break;
-            case 1: // dormir 1s
-                if(screen) screen->dispStr(13,baseY,(char*)"Sleep1s");
-                sleep(1);
-                break;
-            case 2: // double boucle + affichage progression
-                if(screen) screen->dispStr(13,baseY,(char*)"Boucles");
-                {
-                volatile unsigned long dummy=0;
-                for(int i=0;i<100000;i++)
-                {
-                    if( (i % 1000) == 0 && screen)
-                        {
-                        screen->dispStr(22,baseY,(char*)"i=");
-                        screen->dispStr(25,baseY,(int32_t)i);
-                        }
-                    for(int j=0;j<5000;j++)
-                        dummy += (i ^ j);
-                }
-                if(screen)
-                {
-                    screen->dispStr(22,baseY,(char*)"i=");
-                    screen->dispStr(25,baseY,(int32_t)99999);
-                }
-                }
-                break;
-            case 3: // afficher temps fin puis dormir 30s
-                if(screen) {
-                    screen->dispStr(13,baseY,(char*)"End");
-                    screen->dispStr(20,baseY,shared->chrono.now());
-                }
-                sleep(30);
-                shared->cycle++; // prochain cycle
-                break;
-            }
-        shared->sem[(stage+1)%4].release();
+        // 1) Afficher temps départ (gauche)
+        if(screen) {
+            screen->dispStr(13,baseY,(char*)"Start:");
+            screen->dispStr(20,baseY,chrono.now());
+            // nettoyer la ligne (padding)
+            screen->dispStr(40,baseY,(char*)"               ");
         }
-    }
+
+    // 2) Dormir 1s
+    if(screen) screen->dispStr(12,baseY+1,(char*)"End:                           ");
+    if(screen) screen->dispStr(40,baseY+1,(char*)"State: Sleep1s        ");
+        sleep(1);
+
+    // 3) Double boucle (sans affichage de progression)
+    if(screen) screen->dispStr(40,baseY+1,(char*)"State: Boucles   ");
+        {
+        volatile unsigned long dummy=0;
+        for(int i=0;i<100000;i++)
+        {
+            for(int j=0;j<5000;j++)
+            {
+                dummy += (i ^ j);
+            }
+        }
+
+        // 4) Afficher temps fin (droite) puis dormir 2s
+            if(screen) 
+            {
+                    screen->dispStr(12,baseY+1,(char*)"End:");
+                    screen->dispStr(17,baseY+1,chrono.now());
+                    // padding pour effacer d'anciens restes
+                    screen->dispStr(36,baseY+1,(char*)"           ");
+                }
+                sleep(2);
+        }
+   }
+}

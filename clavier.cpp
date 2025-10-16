@@ -1,4 +1,5 @@
 #include "clavier.hpp"
+#include <sys/select.h>
 
 TClavier::TClavier(void) : timeoutUs(100)
     {

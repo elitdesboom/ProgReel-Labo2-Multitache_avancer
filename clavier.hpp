@@ -3,7 +3,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <termio.h>
+#include <termios.h>
+#include <sys/time.h>
 #include <stdint.h>
 
 #include "singleton.hpp"

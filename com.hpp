@@ -2,7 +2,7 @@
 #define COM_HPP
 
 #include "thread.hpp"
-#include <termio.h>
+#include <termios.h>
 #include <mqueue.h>
 
 class TCom : public TThread
